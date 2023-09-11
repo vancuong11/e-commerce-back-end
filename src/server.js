@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import router from './routers/index';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -21,11 +22,10 @@ mongoose
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// run app
-app.get('/', (req, res) => {
-    res.send('server on success');
-});
+// config router
+router(app);
 
+// run app
 app.listen(port, () => {
     console.log('server listening on port ' + port);
 });
