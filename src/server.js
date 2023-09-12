@@ -1,8 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import router from './routers/index';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+
+import router from './routers/index';
 dotenv.config();
 
 const app = express();
@@ -21,6 +23,9 @@ mongoose
 // config bodyParser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// cookie parser
+app.use(cookieParser());
 
 // config router
 router(app);

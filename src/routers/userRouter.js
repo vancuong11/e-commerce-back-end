@@ -1,10 +1,12 @@
 import express from 'express';
 import userController from '../components/userControllers';
-
+import { verifyAccessToken } from '../middlewares/verifyToken';
 const router = express.Router();
 
 router.post('/create', userController.createUser);
 router.post('/login', userController.loginUser);
-router.get('/get-all', userController.getAllUser);
+router.post('/refresh-token', userController.refreshAccessToken);
+router.post('/logout', userController.logoutUser);
+router.get('/get-current', verifyAccessToken, userController.getCurrentUser);
 
 module.exports = router;

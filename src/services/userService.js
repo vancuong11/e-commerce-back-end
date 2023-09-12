@@ -1,5 +1,7 @@
 import User from '../models/userModel';
+import { generateAccessToken, generateRefreshToken } from '../middlewares/jwt';
 import bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
 
 const createUserService = (data) => {
     return new Promise(async (resolve, reject) => {
@@ -35,10 +37,10 @@ const createUserService = (data) => {
     });
 };
 
-const getAllUserService = () => {
+const getCurrentUserService = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const data = await User.find();
+            const data = await User.findById(id).select('-password -role -refresh_token');
             if (!data) {
                 resolve({
                     status: 'ERROR',
@@ -47,7 +49,7 @@ const getAllUserService = () => {
             } else {
                 resolve({
                     status: 'OK',
-                    messageL: 'Get all users successfully',
+                    message: 'Get users successfully',
                     data: data,
                 });
             }
@@ -75,18 +77,55 @@ const loginUserService = (data) => {
                     status: 'ERROR',
                     message: 'The password is not correct',
                 });
-            } else {
-                resolve({
-                    status: 'OK',
-                });
             }
+            // generate access, refresh token
+            const access_token = generateAccessToken({
+                id: checkUser._id,
+                role: checkUser.role,
+            });
+            const refresh_token = generateRefreshToken({
+                id: checkUser._id,
+                role: checkUser.role,
+            });
+            // save refresh token into DB
+            await User.findByIdAndUpdate(checkUser._id, { refresh_token: refresh_token }, { new: true });
+            resolve({
+                status: 'OK',
+                access_token,
+                refresh_token,
+            });
         } catch (error) {
             reject(error);
         }
     });
 };
+
+const logoutService = (token) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await User.findOneAndUpdate(
+                { refresh_token: token },
+                { refresh_token: '' },
+                { new: true },
+            );
+            if (!response) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'The refresh token is not found',
+                });
+            }
+            resolve({
+                status: 'OK',
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 module.exports = {
     createUserService,
-    getAllUserService,
+    getCurrentUserService,
     loginUserService,
+    logoutService,
 };
