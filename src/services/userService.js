@@ -15,18 +15,18 @@ const createUserService = (data) => {
             // mã hóa password
             const hashPassword = bcrypt.hashSync(password, 10);
 
-            const user = await User.create({
+            const createUser = await User.create({
                 email: email,
                 firstName: firstName,
                 lastName: lastName,
                 password: hashPassword,
                 phone: phone,
             });
-            if (user) {
+            if (createUser) {
                 resolve({
                     status: 'OK',
                     message: 'Success',
-                    data: user,
+                    data: createUser,
                 });
             }
         } catch (error) {
@@ -35,6 +35,58 @@ const createUserService = (data) => {
     });
 };
 
+const getAllUserService = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await User.find();
+            if (!data) {
+                resolve({
+                    status: 'ERROR',
+                    messageL: 'User not found',
+                });
+            } else {
+                resolve({
+                    status: 'OK',
+                    messageL: 'Get all users successfully',
+                    data: data,
+                });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const loginUserService = (data) => {
+    return new Promise(async (resolve, reject) => {
+        const { email, password } = data;
+        try {
+            const checkUser = await User.findOne({ email: email });
+            if (!checkUser) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'The email is not defined',
+                });
+            }
+            // compare the password
+            const comparePassword = bcrypt.compareSync(password, checkUser.password);
+            if (!comparePassword) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'The password is not correct',
+                });
+            } else {
+                resolve({
+                    status: 'OK',
+                });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
 module.exports = {
     createUserService,
+    getAllUserService,
+    loginUserService,
 };
