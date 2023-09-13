@@ -1,5 +1,6 @@
 import userService from '../services/userService';
 import jwtToken from '../middlewares/jwt';
+import crypto from 'crypto';
 
 const createUser = async (req, res) => {
     try {
@@ -106,10 +107,60 @@ const logoutUser = async (req, res) => {
     }
 };
 
+// flow reset password
+/*
+- client send email
+- Server check email có hợp lệ hay không -> gửi mail -> kèm theo link (change password)
+- client check email -> click link
+- client gửi api kèm theo token
+- check token có giống với token mà server gửi mail hay
+- change password 
+*/
+
+const forgotPassword = async (req, res) => {
+    try {
+        const data = req.body;
+        if (!data) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing email',
+            });
+        }
+        const response = await userService.forgotPasswordService(data);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error forgot password',
+        });
+    }
+};
+
+const restPassword = async (req, res) => {
+    try {
+        const { password, token } = req.body;
+        if (!token || !password) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required input',
+            });
+        }
+        const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const response = await userService.resetPasswordService(passwordResetToken, password);
+        return res.status(200).json(response);
+        // return res.status(200);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 module.exports = {
     createUser,
     getCurrentUser,
     loginUser,
     refreshAccessToken,
     logoutUser,
+    forgotPassword,
+    restPassword,
 };

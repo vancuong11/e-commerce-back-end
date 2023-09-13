@@ -1,7 +1,11 @@
 import User from '../models/userModel';
 import { generateAccessToken, generateRefreshToken } from '../middlewares/jwt';
 import bcrypt from 'bcrypt';
-import cookieParser from 'cookie-parser';
+import crypto from 'crypto';
+import sendmail from '../utils/sendMail';
+import dotenv from 'dotenv';
+import { log } from 'console';
+dotenv.config();
 
 const createUserService = (data) => {
     return new Promise(async (resolve, reject) => {
@@ -123,9 +127,89 @@ const logoutService = (token) => {
     });
 };
 
+const forgotPasswordService = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { email } = data;
+            const checkEmail = await User.findOne({ email: email });
+            if (!checkEmail) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'The email not found',
+                });
+            }
+
+            // resetToken
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            const passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+            const response = await User.findOneAndUpdate(
+                { email: email },
+                {
+                    passwordResetToken: passwordResetToken,
+                    passwordResetExpires: Date.now() + 15 * 60 * 1000,
+                },
+                { new: true },
+            );
+
+            // sendmail
+            const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn. Link này sẽ hết hạn sau 15p
+
+            <a href=${process.env.URL_SERVER}/api/user/reset-password/${resetToken}>Click here</a>
+
+            `;
+
+            const rs = await sendmail(email, html);
+
+            resolve({
+                status: 'OK',
+                message: 'Success',
+                data: rs,
+                response,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const resetPasswordService = (pwToken, password) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // mã hóa password
+            const hashPassword = bcrypt.hashSync(password, 10);
+            const data = await User.findOneAndUpdate(
+                { passwordResetToken: pwToken, passwordResetExpires: { $gt: Date.now() } },
+                {
+                    password: hashPassword,
+                    passwordResetToken: undefined,
+                    passwordChangeAt: Date.now(),
+                    passwordResetExpires: undefined,
+                },
+                { new: true },
+            );
+            if (!data) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'Invalid reset token',
+                });
+            }
+            resolve({
+                status: 'OK',
+                message: 'Change password success',
+                data: data,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 module.exports = {
     createUserService,
     getCurrentUserService,
     loginUserService,
     logoutService,
+    forgotPasswordService,
+    resetPasswordService,
 };
