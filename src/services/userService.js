@@ -205,6 +205,94 @@ const resetPasswordService = (pwToken, password) => {
     });
 };
 
+const getAllUserService = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await User.find().select('-password -role -refresh_token');
+            if (!data) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'User not found',
+                });
+            }
+            resolve({
+                status: 'OK',
+                message: 'Get all users successfully',
+                data: data,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const deleteUserService = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await User.findByIdAndDelete(id);
+            if (!data) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'User not found',
+                });
+            } else {
+                resolve({
+                    status: 'OK',
+                    message: 'Delete user successfully',
+                });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const updateUserService = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findOne({ _id: id });
+            if (!checkUser) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'User not found',
+                });
+            }
+            const updateUser = await User.findByIdAndUpdate(id, data, { new: true }).select('-password -role');
+
+            resolve({
+                status: 'OK',
+                message: 'Update user successfully',
+                data: updateUser,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const updateUserByAdminService = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findOne({ _id: id });
+            if (!checkUser) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'User not found',
+                });
+            }
+            const updateUser = await User.findByIdAndUpdate(id, data, { new: true }).select('-password -role');
+
+            resolve({
+                status: 'OK',
+                message: 'Update user successfully',
+                data: updateUser,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 module.exports = {
     createUserService,
     getCurrentUserService,
@@ -212,4 +300,8 @@ module.exports = {
     logoutService,
     forgotPasswordService,
     resetPasswordService,
+    getAllUserService,
+    deleteUserService,
+    updateUserService,
+    updateUserByAdminService,
 };

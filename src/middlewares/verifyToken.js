@@ -22,6 +22,20 @@ const verifyAccessToken = async (req, res, next) => {
     }
 };
 
+const verifyIsAdmin = async (req, res, next) => {
+    const { role } = req.user;
+
+    if (role !== 'admin') {
+        return res.status(401).json({
+            status: 'ERROR',
+            message: 'Required admin role',
+        });
+    } else {
+        next();
+    }
+};
+
 module.exports = {
     verifyAccessToken,
+    verifyIsAdmin,
 };

@@ -18,7 +18,7 @@ const createUser = async (req, res) => {
                 message: 'The input is email',
             });
         }
-        const response = await userService.createUserService(data);
+        const response = await userService.createUserService(req.body);
         return res.status(200).json(response);
     } catch (error) {
         console.log(error);
@@ -155,6 +155,78 @@ const restPassword = async (req, res) => {
     }
 };
 
+// CRUD
+const getAllUser = async (req, res) => {
+    try {
+        const response = await userService.getAllUserService();
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(400).json({
+            status: 'ERROR',
+            message: 'Invalid data',
+        });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (!id) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required id',
+            });
+        }
+        const response = await userService.deleteUserService(id);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(400).json({
+            status: 'ERROR',
+            message: 'Invalid data',
+        });
+    }
+};
+
+const updateUser = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const data = req.body;
+        if (!id) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required id',
+            });
+        }
+        const response = await userService.updateUserService(id, data);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(400).json({
+            status: 'ERROR',
+            message: 'Invalid data',
+        });
+    }
+};
+
+const updateUserByAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = req.body;
+        if (!id || Object.keys(data).length === 0) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required input',
+            });
+        }
+        const response = await userService.updateUserByAdminService(id, data);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(400).json({
+            status: 'ERROR',
+            message: 'Invalid data',
+        });
+    }
+};
+
 module.exports = {
     createUser,
     getCurrentUser,
@@ -163,4 +235,8 @@ module.exports = {
     logoutUser,
     forgotPassword,
     restPassword,
+    getAllUser,
+    deleteUser,
+    updateUser,
+    updateUserByAdmin,
 };
