@@ -17,7 +17,7 @@ const verifyAccessToken = async (req, res, next) => {
     } else {
         return res.status(401).json({
             status: 'ERROR',
-            message: 'required authorization',
+            message: 'Required authorization',
         });
     }
 };
