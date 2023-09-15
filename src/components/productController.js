@@ -45,7 +45,7 @@ const getDetailsProduct = async (req, res) => {
 // filter, sort, pagination
 const getAllProduct = async (req, res) => {
     try {
-        const response = await productService.getAllProductService();
+        const response = await productService.getAllProductService(req.query);
         return res.status(200).json(response);
     } catch (error) {
         console.log(error);
@@ -97,10 +97,33 @@ const updateProduct = async (req, res) => {
     }
 };
 
+const ratingsProduct = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const { star, comment, pid } = req.body;
+        if (!star || !pid) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required input',
+            });
+        }
+
+        const response = await productService.ratingsProductService(id, star, comment, pid);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).json({
+            status: 'ERROR',
+            message: 'Rating Product error',
+        });
+    }
+};
+
 module.exports = {
     createProduct,
     getDetailsProduct,
     getAllProduct,
     deleteProduct,
     updateProduct,
+    ratingsProduct,
 };
