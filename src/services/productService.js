@@ -189,10 +189,19 @@ const ratingsProductService = (id, star, comment, pid) => {
             }
 
             // sum ratings
+            const updatedProduct = await Product.findById(pid);
+            const ratingCount = updatedProduct.ratings.length;
+            const sumRatings = updatedProduct.ratings.reduce((sum, el) => {
+                return sum + el.star;
+            }, 0);
+            updatedProduct.totalRatings = Math.round((sumRatings * 10) / ratingCount) / 10;
+
+            await updatedProduct.save();
 
             resolve({
                 status: 'OK',
                 message: 'Update Ratings Products successfully',
+                updatedProduct,
             });
         } catch (error) {
             reject(error);
