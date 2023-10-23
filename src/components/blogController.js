@@ -19,9 +19,9 @@ const createBlog = async (req, res) => {
     }
 };
 
-const getBlog = async (req, res) => {
+const getAllBlog = async (req, res) => {
     try {
-        const response = await blogService.getBlog();
+        const response = await blogService.getAllBlog();
         return res.status(200).json(response);
     } catch (error) {
         return res.status(401).json({
@@ -73,7 +73,7 @@ const deleteBlog = async (req, res) => {
 const likeBlog = async (req, res) => {
     try {
         const { id } = req.user;
-        const { bid } = req.body;
+        const { bid } = req.params;
         if (!bid) {
             return res.status(200).json({
                 status: 'ERROR',
@@ -90,10 +90,51 @@ const likeBlog = async (req, res) => {
     }
 };
 
+const disLikeBlog = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const { bid } = req.params;
+        if (!bid) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing data input',
+            });
+        }
+        const response = await blogService.disLikeBlogService(id, bid);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(401).json({
+            status: 'ERROR',
+            message: 'disLike Blog error',
+        });
+    }
+};
+
+const getBlogDetail = async (req, res) => {
+    try {
+        const { bid } = req.params;
+        if (!bid) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing data input',
+            });
+        }
+        const response = await blogService.getDetailBlogService(bid);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(401).json({
+            status: 'ERROR',
+            message: 'getDetailBlog error',
+        });
+    }
+};
+
 module.exports = {
     createBlog,
-    getBlog,
+    getAllBlog,
     updateBlog,
     deleteBlog,
     likeBlog,
+    disLikeBlog,
+    getBlogDetail,
 };
