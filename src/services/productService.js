@@ -1,4 +1,4 @@
-import Product from '../models/productModel';
+import Product from '../models/product';
 import slugify from 'slugify';
 
 const createProductService = (data) => {

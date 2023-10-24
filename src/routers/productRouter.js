@@ -1,6 +1,7 @@
 import express from 'express';
 import { verifyAccessToken, verifyIsAdmin } from '../middlewares/verifyToken';
 import productController from '../components/productController';
+import uploader from '../config/configcloudinary';
 const router = express.Router();
 
 router.post('/create-product', verifyAccessToken, verifyIsAdmin, productController.createProduct);
@@ -9,4 +10,12 @@ router.delete('/delete-product/:id', verifyAccessToken, verifyIsAdmin, productCo
 router.put('/update-product/:id', verifyAccessToken, verifyIsAdmin, productController.updateProduct);
 router.put('/ratings', verifyAccessToken, productController.ratingsProduct);
 router.get('/get-all', productController.getAllProduct);
+router.put(
+    '/upload-image-product/:id',
+    verifyAccessToken,
+    verifyIsAdmin,
+    uploader.single('images'),
+    productController.uploadImagesProduct,
+);
+
 module.exports = router;

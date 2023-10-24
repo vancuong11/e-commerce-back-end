@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import User from '../models/userModel';
+import User from '../models/user';
 dotenv.config();
 // sign(payload, secretkey, options)
 

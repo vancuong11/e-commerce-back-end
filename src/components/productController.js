@@ -110,10 +110,21 @@ const ratingsProduct = async (req, res) => {
         const response = await productService.ratingsProductService(id, star, comment, pid);
         return res.status(200).json(response);
     } catch (error) {
-        console.log(error);
         return res.status(401).json({
             status: 'ERROR',
             message: 'Rating Product error',
+        });
+    }
+};
+
+const uploadImagesProduct = (req, res) => {
+    try {
+        console.log(req.file);
+        return res.json('OK');
+    } catch (error) {
+        return res.status(401).json({
+            status: 'ERROR',
+            message: 'Upload Product error',
         });
     }
 };
@@ -125,4 +136,5 @@ module.exports = {
     deleteProduct,
     updateProduct,
     ratingsProduct,
+    uploadImagesProduct,
 };

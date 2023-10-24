@@ -1,10 +1,9 @@
-import User from '../models/userModel';
+import User from '../models/user';
 import { generateAccessToken, generateRefreshToken } from '../middlewares/jwt';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import sendmail from '../utils/sendMail';
 import dotenv from 'dotenv';
-import { log } from 'console';
 dotenv.config();
 
 const createUserService = (data) => {
