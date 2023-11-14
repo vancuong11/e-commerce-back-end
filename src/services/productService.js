@@ -209,6 +209,25 @@ const ratingsProductService = (id, star, comment, pid) => {
     });
 };
 
+const uploadImageProductService = (id, filesImage) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await Product.findByIdAndUpdate(
+                id,
+                {
+                    $push: { images: { $each: filesImage.map((el) => el.path) } },
+                },
+                { new: true },
+            );
+            resolve({
+                status: 'OK',
+                data: data,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
 module.exports = {
     createProductService,
     getDetailsProductService,
@@ -216,4 +235,5 @@ module.exports = {
     deleteProductService,
     updateProductService,
     ratingsProductService,
+    uploadImageProductService,
 };

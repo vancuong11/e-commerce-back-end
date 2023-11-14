@@ -148,6 +148,26 @@ const getDetailBlogService = (bid) => {
     });
 };
 
+const uploadImageBlogService = (id, fileImage) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await Blog.findByIdAndUpdate(
+                id,
+                {
+                    image: fileImage.path,
+                },
+                { new: true },
+            );
+            resolve({
+                status: 'OK',
+                data: data,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 module.exports = {
     createBlog,
     getAllBlog,
@@ -156,4 +176,5 @@ module.exports = {
     likeBlogService,
     disLikeBlogService,
     getDetailBlogService,
+    uploadImageBlogService,
 };

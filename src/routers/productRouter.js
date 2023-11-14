@@ -14,7 +14,7 @@ router.put(
     '/upload-image-product/:id',
     verifyAccessToken,
     verifyIsAdmin,
-    uploader.single('images'),
+    uploader.array('images', 10),
     productController.uploadImagesProduct,
 );
 

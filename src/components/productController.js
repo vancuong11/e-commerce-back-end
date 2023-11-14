@@ -117,10 +117,17 @@ const ratingsProduct = async (req, res) => {
     }
 };
 
-const uploadImagesProduct = (req, res) => {
+const uploadImagesProduct = async (req, res) => {
     try {
-        console.log(req.file);
-        return res.json('OK');
+        const { id } = req.params;
+        if (!req.files) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required input',
+            });
+        }
+        const response = await productService.uploadImageProductService(id, req.files);
+        return res.status(200).json(response);
     } catch (error) {
         return res.status(401).json({
             status: 'ERROR',

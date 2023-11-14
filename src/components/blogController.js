@@ -129,6 +129,24 @@ const getBlogDetail = async (req, res) => {
     }
 };
 
+const uploadImagesBlog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!req.file) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required input',
+            });
+        }
+        const response = await blogService.uploadImageBlogService(id, req.file);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(401).json({
+            status: 'ERROR',
+            message: 'Upload Blog error',
+        });
+    }
+};
 module.exports = {
     createBlog,
     getAllBlog,
@@ -137,4 +155,5 @@ module.exports = {
     likeBlog,
     disLikeBlog,
     getBlogDetail,
+    uploadImagesBlog,
 };
