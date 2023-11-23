@@ -39,8 +39,7 @@ var userSchema = new mongoose.Schema(
             },
         ],
         address: {
-            type: Array,
-            default: [],
+            type: String,
         },
         wishList: [
             {
