@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User from '../models/user';
 dotenv.config();
-// sign(payload, secretkey, options)
+// sign(payload, secretKey, options)
 
 const generateAccessToken = (payload) => {
     return jwt.sign(

@@ -13,6 +13,8 @@ router.get('/get-all', verifyAccessToken, verifyIsAdmin, userController.getAllUs
 router.delete('/delete-user/:id', verifyAccessToken, verifyIsAdmin, userController.deleteUser);
 router.put('/update-user/:id', verifyAccessToken, userController.updateUser);
 router.put('/update-user-by-admin/:id', verifyAccessToken, verifyIsAdmin, userController.updateUserByAdmin);
+router.put('/update-address-user', verifyAccessToken, userController.updateAddressUser);
+router.put('/update-cart-user', verifyAccessToken, userController.updateCartUser);
 router.get('/get-current', verifyAccessToken, userController.getCurrentUser);
 
 module.exports = router;

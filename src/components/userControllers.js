@@ -227,6 +227,46 @@ const updateUserByAdmin = async (req, res) => {
     }
 };
 
+const updateAddressUser = async (req, res) => {
+    try {
+        const { id } = req.user;
+        if (!req.body.address) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required input',
+            });
+        }
+        const response = await userService.updateAddressUserByAdminService(id, req.body.address);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(400).json({
+            status: 'ERROR',
+            message: 'Invalid data',
+        });
+    }
+};
+
+const updateCartUser = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const { pid, quantity, color } = req.body;
+        if (!pid || !quantity || !color) {
+            return res.status(200).json({
+                status: 'ERROR',
+                message: 'Missing required input',
+            });
+        }
+        const response = await userService.updateCartUserService(id, req.body);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({
+            status: 'ERROR',
+            message: 'Invalid data',
+        });
+    }
+};
+
 module.exports = {
     createUser,
     getCurrentUser,
@@ -239,4 +279,6 @@ module.exports = {
     deleteUser,
     updateUser,
     updateUserByAdmin,
+    updateAddressUser,
+    updateCartUser,
 };

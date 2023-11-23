@@ -292,6 +292,83 @@ const updateUserByAdminService = (id, data) => {
     });
 };
 
+const updateAddressUserByAdminService = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findOne({ _id: id });
+            if (!checkUser) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'User not found',
+                });
+            }
+            const updateAddressUser = await User.findByIdAndUpdate(
+                id,
+                { $push: { address: data } },
+                { new: true },
+            ).select('-password -role');
+
+            resolve({
+                status: 'OK',
+                message: 'Update user successfully',
+                data: updateAddressUser,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const updateCartUserService = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findById(id).select('cart');
+
+            const alreadyProduct = await user?.cart?.find((el) => el.product.toString() === data.pid);
+            if (alreadyProduct) {
+                if (alreadyProduct.color === data.color) {
+                    const response = await User.updateOne(
+                        { cart: { $elemMatch: alreadyProduct } },
+                        {
+                            $set: { 'cart.$.quantity': data.quantity },
+                        },
+                        { new: true },
+                    );
+                    resolve({
+                        status: 'OK',
+                        message: 'Update user successfully',
+                        data: response,
+                    });
+                } else {
+                    const response = await User.findByIdAndUpdate(
+                        id,
+                        { $push: { cart: { product: data.pid, quantity: data.quantity, color: data.color } } },
+                        { new: true },
+                    );
+                    resolve({
+                        status: 'OK',
+                        message: 'Update user successfully',
+                        data: response,
+                    });
+                }
+            } else {
+                const response = await User.findByIdAndUpdate(
+                    id,
+                    { $push: { cart: { product: data.pid, quantity: data.quantity, color: data.color } } },
+                    { new: true },
+                );
+                resolve({
+                    status: 'OK',
+                    message: 'Update user successfully',
+                    data: response,
+                });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 module.exports = {
     createUserService,
     getCurrentUserService,
@@ -303,4 +380,6 @@ module.exports = {
     deleteUserService,
     updateUserService,
     updateUserByAdminService,
+    updateAddressUserByAdminService,
+    updateCartUserService,
 };
