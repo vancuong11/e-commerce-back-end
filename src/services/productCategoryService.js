@@ -18,11 +18,11 @@ const createCategory = (data) => {
 const getCategory = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await ProductCategory.find().select('title _id');
+            const response = await ProductCategory.find();
             resolve({
                 status: 'OK',
                 message: 'getCategory successfully',
-                data: response,
+                prod: response,
             });
         } catch (error) {
             reject(error);

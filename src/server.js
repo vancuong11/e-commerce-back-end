@@ -3,13 +3,19 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 import router from './routers/index';
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8888;
-
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    }),
+);
 // config mongoDB
 mongoose
     .connect(process.env.MONGO_DB)

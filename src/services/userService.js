@@ -67,6 +67,7 @@ const loginUserService = (data) => {
         const { email, password } = data;
         try {
             const checkUser = await User.findOne({ email: email });
+
             if (!checkUser) {
                 resolve({
                     status: 'ERROR',
@@ -81,6 +82,7 @@ const loginUserService = (data) => {
                     message: 'The password is not correct',
                 });
             }
+
             // generate access, refresh token
             const access_token = generateAccessToken({
                 id: checkUser._id,
@@ -92,10 +94,11 @@ const loginUserService = (data) => {
             });
             // save refresh token into DB
             await User.findByIdAndUpdate(checkUser._id, { refresh_token: refresh_token }, { new: true });
+            // const { password, role, ...userData } = checkUser;
             resolve({
                 status: 'OK',
                 access_token,
-                refresh_token,
+                data: checkUser,
             });
         } catch (error) {
             reject(error);
@@ -154,7 +157,7 @@ const forgotPasswordService = (data) => {
             // sendmail
             const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn. Link này sẽ hết hạn sau 15p
 
-            <a href=${process.env.URL_SERVER}/api/user/reset-password/${resetToken}>Click here</a>
+            <a href=${process.env.CLIENT_URL}/reset-password/${resetToken}>Click here</a>
 
             `;
 
@@ -162,9 +165,7 @@ const forgotPasswordService = (data) => {
 
             resolve({
                 status: 'OK',
-                message: 'Success',
-                data: rs,
-                response,
+                message: 'Hãy kiểm tra email của bạn!',
             });
         } catch (error) {
             reject(error);
@@ -196,7 +197,6 @@ const resetPasswordService = (pwToken, password) => {
             resolve({
                 status: 'OK',
                 message: 'Change password success',
-                data: data,
             });
         } catch (error) {
             reject(error);

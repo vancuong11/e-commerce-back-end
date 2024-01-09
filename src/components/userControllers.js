@@ -39,6 +39,7 @@ const loginUser = async (req, res) => {
         const response = await userService.loginUserService(data);
         //destructuring rests JS get data refresh_token
         const { refresh_token, ...newResponses } = response;
+
         // save refresh_token in cookie
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
